@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+:root {
+  --background: #FCFBF7; /* Soft Pearl White */
+  --foreground: #121212; /* Deep Onyx */
+
+  /* Premium Design Tokens */
+  --primary: #D1B06B;    /* Luminous Gold */
+  --secondary: #121212;  /* Deep Onyx (matches light text) */
+  --accent: #F5F3EF;     /* Soft Linen */
+  --accent-dark: #EBE8E2; /* Muted Silk */
+  --text-muted: #6B6B6B; /* Slate Grey */
+  --border: #EBE8E2;
+}
+
+.dark {
+  --background: #0A0A0A; /* Deep Obsidian */
+  --foreground: #F5F3EF; /* Soft Linen */
+  
+  --secondary: #F5F3EF;  /* Soft Linen (matches dark text) */
+  --accent: #151515;     /* Dark Charcoal */
+  --accent-dark: #1F1F1F; /* Rich Ebony */
+  --text-muted: #8E8E8E; /* Silver Grey */
+  --border: #1F1F1F;
+}
+
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-accent-dark: var(--accent-dark);
+
+  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-outfit);
+
+  --animate-fade-in: fadeIn 1s ease-out forwards;
+  --animate-fade-in-up: fadeInUp 1s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: var(--animate-fade-in);
+}
+
+.animate-fadeInUp {
+  animation: var(--animate-fade-in-up);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-outfit), sans-serif;
+  overflow-x: hidden;
+  width: 100%;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-playfair), serif;
+}
+
+/* Hide number input arrows */
+.hide-arrows::-webkit-outer-spin-button,
+.hide-arrows::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.hide-arrows {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
