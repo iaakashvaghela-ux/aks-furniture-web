@@ -8,7 +8,18 @@ import ProductCard from '../../common/ProductCard';
 
 const BestsellingProducts = () => {
 
-    const [mobileView, setMobileView] = useState(window.innerWidth <= 768 ? true : false)
+    const [mobileView, setMobileView] = useState(false)
+
+    React.useEffect(() => {
+        const updateMobileView = () => {
+            setMobileView(window.innerWidth <= 768)
+        }
+
+        updateMobileView()
+        window.addEventListener('resize', updateMobileView)
+
+        return () => window.removeEventListener('resize', updateMobileView)
+    }, [])
 
     const settings = {
         dots: false,
