@@ -3,14 +3,18 @@ import React from 'react';
 import Link from 'next/link';
 import { useTheme } from '@/redux/hooks';
 
-const LuxuryHero = () => {
+const LuxuryHero = ({ data = {} }) => {
   const { theme, toggleTheme,activeMenuIndex, setActiveMenuIndex } = useTheme();
+  const title = data.title || "Our Legacy";
+  const highlight = data.highlight || "Legacy";
+  const titleStart = title.replace(highlight, "").trim() || "Our";
+
   return (
     <section className="relative h-[80vh] min-h-[600px] flex items-center justify-center overflow-hidden bg-background">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/home-page/983cc349-1718-4290-b7cd-c8eb20459536-1671213069.jpg"
+          src={data.image || "https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/home-page/983cc349-1718-4290-b7cd-c8eb20459536-1671213069.jpg"}
           alt="Luxury Furniture"
           className="w-full h-full object-cover opacity-60 scale-105 animate-pulse"
           style={{ animationDuration: '8s' }}
@@ -28,11 +32,11 @@ const LuxuryHero = () => {
 
 
         <h1 className="text-7xl md:text-9xl font-serif font-bold text-secondary tracking-tighter leading-none animate-fadeInUp transition-colors duration-500">
-          Our <span className="text-primary italic">Legacy</span>
+          {titleStart} <span className="text-primary italic">{highlight}</span>
         </h1>
 
         <p className="max-w-2xl mx-auto text-lg md:text-xl text-secondary/70 font-sans tracking-wide leading-relaxed animate-fadeInUp delay-100 transition-colors duration-500">
-          Crafting timeless spaces where comfort meets uncompromising elegance. Since 1998, we've been the silent architect of luxury living.
+          {data.description || "Crafting timeless spaces where comfort meets uncompromising elegance. Since 1998, we have been the silent architect of luxury living."}
         </p>
 
         <div className="pt-10 animate-fadeInUp delay-500">

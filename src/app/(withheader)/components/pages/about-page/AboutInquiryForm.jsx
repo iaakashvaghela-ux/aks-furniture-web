@@ -1,8 +1,11 @@
 "use client";
 
 import React, { useState } from 'react';
+import { submitAboutEnquiry } from '@/app/(withheader)/api-fetching/about/aboutApi';
 
-export default function AboutInquiryForm() {
+export default function AboutInquiryForm({ company = {} }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [notice, setNotice] = useState("");
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,12 +19,15 @@ export default function AboutInquiryForm() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulating form submission
-    console.log('Form Submitted:', formData);
-    alert('Thank you for your enquiry! We will get back to you soon.');
-    setFormData({ name: '', email: '', mobile: '', subject: '', message: '' });
+    setIsSubmitting(true);
+    const response = await submitAboutEnquiry(formData);
+    setNotice(response._message || "Thank you for your enquiry.");
+    if (response._status) {
+      setFormData({ name: '', email: '', mobile: '', subject: '', message: '' });
+    }
+    setIsSubmitting(false);
   };
 
   return (
@@ -37,7 +43,7 @@ export default function AboutInquiryForm() {
                 Contact Us
               </h2>
               <p className="text-secondary/60 text-lg leading-relaxed max-w-lg">
-                Whether you're seeking a custom piece or have questions about our collections, our artisans are ready to assist you in creating your perfect space.
+                Whether you&apos;re seeking a custom piece or have questions about our collections, our artisans are ready to assist you in creating your perfect space.
               </p>
             </div>
 
@@ -48,7 +54,7 @@ export default function AboutInquiryForm() {
                 </div>
                 <div>
                   <h4 className="font-serif text-xl font-bold text-secondary mb-2">Artisan Studio</h4>
-                  <p className="text-secondary/50 leading-relaxed">Claritas est etiam processus dynamicus, <br />123 Luxury Ave, Design District</p>
+                  <p className="text-secondary/50 leading-relaxed">{company.companyAddress || "Claritas est etiam processus dynamicus, 123 Luxury Ave, Design District"}</p>
                 </div>
               </div>
 
@@ -58,7 +64,7 @@ export default function AboutInquiryForm() {
                 </div>
                 <div>
                   <h4 className="font-serif text-xl font-bold text-secondary mb-2">Concierge Line</h4>
-                  <p className="text-secondary/50 leading-relaxed">98745612330</p>
+                  <p className="text-secondary/50 leading-relaxed">{company.companyPhone || "98745612330"}</p>
                 </div>
               </div>
 
@@ -68,7 +74,7 @@ export default function AboutInquiryForm() {
                 </div>
                 <div>
                   <h4 className="font-serif text-xl font-bold text-secondary mb-2">Digital Correspondence</h4>
-                  <p className="text-secondary/50 leading-relaxed">furnitureinfo@gmail.com</p>
+                  <p className="text-secondary/50 leading-relaxed">{company.companyEmail || "furnitureinfo@gmail.com"}</p>
                 </div>
               </div>
             </div>
@@ -88,11 +94,9 @@ export default function AboutInquiryForm() {
                 </div>
 
                 <form
-                  method="POST"
-                  action="https://wscubetech.co/Assignments/furniture/contact-us"
+                  onSubmit={handleSubmit}
                   className="space-y-6"
                 >
-                  <input name="_token" type="hidden" value="pNdwYkHND5Yf5qvqxPxPpSxYVs0tTOq0ZndRSaFW" />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold uppercase tracking-widest text-secondary/40 ml-1">Your Name</label>
@@ -162,10 +166,12 @@ export default function AboutInquiryForm() {
 
                   <button
                     type="submit"
+                    disabled={isSubmitting}
                     className="w-full h-16 bg-secondary text-background font-bold text-[11px] uppercase tracking-[0.4em] rounded-full hover:bg-primary transition-all duration-500 shadow-2xl transform hover:-translate-y-1 active:scale-[0.98]"
                   >
-                    Send Enquiry
+                    {isSubmitting ? "Sending..." : "Send Enquiry"}
                   </button>
+                  {notice && <p className="text-center text-sm text-primary font-medium">{notice}</p>}
                 </form>
               </div>
             </div>

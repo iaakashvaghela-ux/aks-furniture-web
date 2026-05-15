@@ -1,13 +1,22 @@
 import axios from 'axios'
 
 export const Products = async () => {
-  const res = await axios.get("https://dummyjson.com/products");
-  return res.data.products;
+  try {
+    const res = await axios.get("https://dummyjson.com/products");
+    return res.data.products || [];
+  } catch (error) {
+    console.error("Products Fetch Error:", error);
+    return [];
+  }
 };
 
 
 export const ProductBySlug = async (slug) => {
-  const res = await axios.get(`https://dummyjson.com/products/${slug}`);
-  console.log(res.data);
-  return res.data;
+  try {
+    const res = await axios.get(`https://dummyjson.com/products/${slug}`);
+    return res.data || {};
+  } catch (error) {
+    console.error("ProductBySlug Fetch Error:", error);
+    return {};
+  }
 };

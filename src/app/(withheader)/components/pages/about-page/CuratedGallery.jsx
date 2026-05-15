@@ -1,7 +1,7 @@
 import React from 'react';
 
-const CuratedGallery = () => {
-  const items = [
+const CuratedGallery = ({ items: galleryItems = [] }) => {
+  const fallbackItems = [
     {
       title: 'Monsta Atelier',
       category: 'Production',
@@ -21,6 +21,14 @@ const CuratedGallery = () => {
       span: 'col-span-1 row-span-1'
     }
   ];
+  const items = galleryItems.length
+    ? galleryItems.map((item) => ({
+      title: item.title,
+      category: item.category,
+      img: item.image,
+      span: item.span || "col-span-1 row-span-1"
+    }))
+    : fallbackItems;
 
   return (
     <section className="py-32 bg-background">

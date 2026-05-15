@@ -1,35 +1,46 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { getCartItems, removeFromCart, updateCartQuantity } from '@/app/(withheader)/api-fetching/cartApi/cartApi';
+import { useDispatch } from 'react-redux';
+import { setCart } from '@/redux/slices/cartSlice';
 
 const CartLayout = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Aurelius Velvet Lounge Chair",
-      price: 850,
-      quantity: 1,
-      image: "https://images.unsplash.com/photo-1592078615290-033ee584e267?q=80&w=1000&auto=format&fit=crop",
-      category: "Signature Collection"
-    },
-    {
-      id: 2,
-      name: "Minimalist Marble Side Table",
-      price: 420,
-      quantity: 2,
-      image: "https://images.unsplash.com/photo-1581428982868-e410dd047a90?q=80&w=1000&auto=format&fit=crop",
-      category: "Living Room"
-    }
-  ]);
 
-  const updateQuantity = (id, delta) => {
+
+
+
+  const [cartItems, setCartItems] = useState([]);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      const response = await getCartItems();
+      setCartItems(response.data);
+      dispatch(setCart(response.data));
+    };
+    fetchCartItems();
+  }, []);
+
+  const updateQuantity = async (id, delta) => {
+    const response = await updateCartQuantity(id, delta);
+    let res = await getCartItems();
+    if (response.success) {
+      setCartItems(res.data);
+    }
+
+
     setCartItems(prev => prev.map(item =>
       item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
     ));
   };
 
-  const removeItem = (id) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
+  const removeItem = async (id) => {
+    const response = await removeFromCart(id);
+    let res = await getCartItems();
+    if (response.success) {
+      setCartItems(res.data);
+    }
   };
 
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
@@ -78,23 +89,23 @@ const CartLayout = () => {
             <div className="hidden md:grid grid-cols-12 gap-4 pb-6 border-b border-border text-[10px] font-bold uppercase tracking-[0.3em] text-secondary/40">
               <div className="col-span-6 text-left">Product Details</div>
               <div className="col-span-2 text-center">Quantity</div>
-              <div className="col-span-2 text-center">Price</div>
+              <div className="col-span-2 text-center">price</div>
               <div className="col-span-2 text-right">Remove</div>
             </div>
 
             <div className="space-y-12">
               {cartItems.map((item) => (
-                <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center animate-fadeInUp">
+                <div key={item._id} className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center animate-fadeInUp">
                   <div className="col-span-12 md:col-span-6 flex items-center gap-6">
                     <div className="w-24 h-24 md:w-32 md:h-32 flex-shrink-0 bg-accent rounded-2xl overflow-hidden group">
                       <img
-                        src={item.image}
+                        src={item.path + item.image}
                         alt={item.name}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                     </div>
                     <div className="space-y-1">
-                      <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{item.category}</span>
+                      <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{item.category.name}</span>
                       <h3 className="text-lg font-serif font-bold leading-snug">{item.name}</h3>
                       <p className="text-xs text-secondary/40 font-light italic">Artisan Finished</p>
                     </div>
@@ -103,19 +114,21 @@ const CartLayout = () => {
                   <div className="col-span-6 md:col-span-2 flex justify-center">
                     <div className="flex items-center bg-accent rounded-full px-4 h-10 border border-border/20 hover:border-primary/20 transition-all">
                       <button
-                        onClick={() => updateQuantity(item.id, -1)}
+                        onClick={() => updateQuantity(item._id, item.quantity - 1)}
                         className="w-6 text-secondary hover:text-primary transition-colors text-lg"
                       >–</button>
                       <span className="w-8 text-center text-xs font-bold">{item.quantity}</span>
                       <button
-                        onClick={() => updateQuantity(item.id, 1)}
+                        disabled={item.quantity === item.productId.stocks}
+                        onClick={() => updateQuantity(item._id, item.quantity + 1)}
                         className="w-6 text-secondary hover:text-primary transition-colors text-lg"
                       >+</button>
                     </div>
                   </div>
 
                   <div className="col-span-6 md:col-span-2 text-center">
-                    <span className="text-lg font-serif font-bold text-primary whitespace-nowrap">${(item.price * item.quantity).toLocaleString()}</span>
+                    <span className="text-lg font-serif font-bold text-primary whitespace-nowrap">${
+                      (item.price * item.quantity).toLocaleString()}</span>
                     {item.quantity > 1 && (
                       <p className="text-[9px] text-secondary/40 font-bold uppercase tracking-widest mt-1">${item.price}/ea</p>
                     )}
@@ -123,7 +136,7 @@ const CartLayout = () => {
 
                   <div className="col-span-12 md:col-span-2 text-right">
                     <button
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeItem(item._id)}
                       className="group p-3 hover:bg-red-500/10 rounded-full transition-all"
                     >
                       <svg className="w-4 h-4 text-secondary/20 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">

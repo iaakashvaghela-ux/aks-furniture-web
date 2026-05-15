@@ -1,46 +1,35 @@
 "use client";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { viewTestimonials } from '@/app/(withheader)/api-fetching/testimonials/testimonialsApi';
 
 const TestimonialSection = () => {
+    const [testimonials, setTestimonials] = useState([])
+    const [path, setPath] = useState("")
     const settings = {
         dots: true,
         infinite: true,
-        speed: 800,
+        speed: 400,
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: true,
-        autoplaySpeed: 5000,
+        autoplaySpeed: 4000,
         arrows: false,
         fade: true,
     };
+    let data = async () => {
 
-    const testimonials = [
-        {
-            text: "These guys have been absolutely outstanding. Perfect Themes and the best of all that you have many options to choose! Best Support team ever! Very fast responding! Thank you very much! I highly recommend this theme and these people!",
-            image: "https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/testimonial/c6381687-5a5e-4914-9373-9cbec4937be6-1670161604.jpg",
-            name: "Kathy Young",
-            job: "CEO of SunPark",
-            rating: 5
-        },
-        {
-            text: "These guys have been absolutely outstanding. Perfect Themes and the best of all that you have many options to choose! Best Support team ever! Very fast responding! Thank you very much! I highly recommend this theme and these people!",
-            image: "https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/testimonial/35b5a0a0-e80f-4038-a75a-2811de92118b-1670161614.png",
-            name: "Kathy Young",
-            job: "CEO of SunPark",
-            rating: 4
-        },
-        {
-            text: "These guys have been absolutely outstanding. Perfect Themes and the best of all that you have many options to choose! Best Support team ever! Very fast responding! Thank you very much! I highly recommend this theme and these people!",
-            image: "https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/testimonial/3023f95a-ce85-434c-b9c5-2b0943b865e2-1670161621.jpg",
-            name: "Kathy Young",
-            job: "CEO of SunPark",
-            rating: 5
-        }
-    ];
-
+        let testimonialss = await viewTestimonials();
+        setTestimonials(testimonialss.data);
+        setPath(testimonialss.path);
+    }
+    useEffect(() => {
+        data();
+    }, []);
+    
+    
     return (
         <section className="py-20 md:py-28 bg-accent transition-colors duration-500 overflow-hidden">
             <div className="container mx-auto px-4">
@@ -54,12 +43,12 @@ const TestimonialSection = () => {
                 <div className="max-w-4xl mx-auto">
                     <Slider {...settings} className="testimonial-slider">
                         {testimonials.map((testimonial, index) => (
-                            <div key={index} className="outline-none">
+                            <div key={index} className="outline-none" tabIndex={-1}>
                                 <div className="flex flex-col items-center text-center px-4">
                                     <div className="mb-10">
                                         <div className="w-20 h-20 md:w-28 md:h-28 rounded-full overflow-hidden border-4 border-background shadow-xl mx-auto ring-1 ring-border">
                                             <img
-                                                src={testimonial.image}
+                                                src={path+testimonial.image}
                                                 alt={testimonial.name}
                                                 className="w-full h-full object-cover"
                                             />
@@ -69,7 +58,7 @@ const TestimonialSection = () => {
                                     <blockquote className="mb-10 relative">
                                         <svg className="absolute -top-6 -left-8 w-12 h-12 text-primary/10" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v8h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v8h-9.983z" /></svg>
                                         <p className="text-xl md:text-2xl text-secondary/80 font-serif italic leading-relaxed px-6">
-                                            "{testimonial.text}"
+                                            "{testimonial.message}"
                                         </p>
                                     </blockquote>
 
@@ -78,7 +67,7 @@ const TestimonialSection = () => {
                                             {testimonial.name}
                                         </h4>
                                         <span className="text-[11px] text-primary font-bold uppercase tracking-[0.3em]">
-                                            {testimonial.job}
+                                            {testimonial.designation}
                                         </span>
                                     </div>
 
@@ -99,22 +88,6 @@ const TestimonialSection = () => {
                     </Slider>
                 </div>
             </div>
-
-            <style jsx global>{`
-                .testimonial-slider .slick-dots {
-                    bottom: -60px;
-                }
-                .testimonial-slider .slick-dots li button:before {
-                    color: var(--primary);
-                    font-size: 8px;
-                    opacity: 0.3;
-                }
-                .testimonial-slider .slick-dots li.slick-active button:before {
-                    color: var(--primary);
-                    opacity: 1;
-                    font-size: 10px;
-                }
-            `}</style>
         </section>
     );
 };

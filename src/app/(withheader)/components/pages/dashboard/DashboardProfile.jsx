@@ -55,7 +55,8 @@ export default function DashboardProfile() {
 
   const updateProfile = (e) => {
     e.preventDefault();
-    axios.post(`${apiBaseUrl}auth/update-profile`, profile, {
+    let gender = e.target.gender.value;
+    axios.post(`${apiBaseUrl}auth/update-profile`, {gender}, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -89,7 +90,7 @@ export default function DashboardProfile() {
           <div>
             <h4 className="text-xl font-serif font-bold text-secondary">{profile.name}</h4>
             <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted">
-              Member Since {profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A'}
+              Member Since {profile.createdAt ? new Date(profile.createdAt).toLocaleDateString() : 'N/A'}
             </p>
           </div>
         </div>
@@ -146,7 +147,8 @@ export default function DashboardProfile() {
         />
         <ProfileInput 
           label="Phone Number" 
-          name="phone" 
+          name="phone"
+          readOnly
           type="tel" 
           value={profile.phone} 
           onChange={handleChange} 

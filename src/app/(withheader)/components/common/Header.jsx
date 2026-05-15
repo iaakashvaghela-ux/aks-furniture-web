@@ -6,22 +6,48 @@ import { useDispatch, useSelector } from 'react-redux';
 import { usePathname } from 'next/navigation';
 import { removeToken } from '@/redux/slices/loginSlice';
 import { useRouter } from 'next/navigation';
+import { setCart } from '@/redux/slices/cartSlice';
+import { getCartItems } from '../../api-fetching/cartApi/cartApi';
+import { setWishlist } from '@/redux/slices/wishlistSlice';
+import { getWishlistItems } from '../../api-fetching/wishlistApi/wishlistApi';
+import { homeCollectionMenuApi } from '../../api-fetching/home/homeCollectionMenuApi';
 
 const Header = () => {
-
+    const dispatch = useDispatch();
     const { theme, toggleTheme, activeMenuIndex, setActiveMenuIndex } = useTheme();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const pathname = usePathname();
-    // const [activeMenuIndex, setActiveMenuIndex] = useState(0);
+    const [mounted, setMounted] = useState(false);
     const router = useRouter();
+    const cartItems = useSelector((state) => state.cart.cartItems);
+    const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
+    const [collectionMenu, setCollectionMenu] = useState([]);
+
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setMounted(true);
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 50);
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    useEffect(() => {
+        const fetchHeaderItems = async () => {
+            const [cartResponse, wishlistResponse, collectionResponse] = await Promise.all([
+                getCartItems(),
+                getWishlistItems(),
+                homeCollectionMenuApi()
+            ]);
+            dispatch(setCart(cartResponse.data));
+            dispatch(setWishlist(wishlistResponse.data));
+            setCollectionMenu(collectionResponse?._data || []);
+        };
+        fetchHeaderItems();
+    }, [dispatch]);
+
 
     const navLinks = [
         { name: 'Home', href: '/' },
@@ -30,12 +56,11 @@ const Header = () => {
     ];
 
     const token = useSelector((state) => state.login.token);
-    const dispatch = useDispatch();
 
     return (
         <header className="w-full font-sans relative">
             {/* Top Bar - Luxe Minimal */}
-            <div className={`bg-neutral-900 text-white  py-2.5 border-b border-white/5 ${token ? 'hidden' : 'block'}`}>
+            <div className={`bg-neutral-900 text-white  py-2.5 border-b border-white/5 ${mounted && token ? 'hidden' : 'block'}`}>
                 <div className="container mx-auto px-6 flex justify-between items-center text-[11px] uppercase tracking-[0.2em] font-medium">
                     <div className="hidden md:block">
                         <p>Complimentary Shipping on Luxury Orders over Rs. 50,000</p>
@@ -82,14 +107,36 @@ const Header = () => {
                                     Collection
                                     <svg className="w-3 h-3 translate-y-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
                                 </span>
-                                {/* Elegant Dropdown */}
-                                <div className="absolute left-0 top-full mt-2 w-56 bg-background shadow-2xl border-t border-accent-dark opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 rounded-b-sm p-6 z-50">
-                                    <ul className="space-y-4">
-                                        <li><Link href="#" className="text-[11px] uppercase tracking-widest text-secondary/50 hover:text-primary transition-colors block">Living Room</Link></li>
-                                        <li><Link href="#" className="text-[11px] uppercase tracking-widest text-secondary/50 hover:text-primary transition-colors block">Bedroom</Link></li>
-                                        <li><Link href="#" className="text-[11px] uppercase tracking-widest text-secondary/50 hover:text-primary transition-colors block">Office</Link></li>
-                                        <li><Link href="#" className="text-[11px] uppercase tracking-widest text-secondary/50 hover:text-primary transition-colors block">Decor</Link></li>
-                                    </ul>
+                                <div className="absolute left-0 top-full mt-2 w-[760px] max-h-[70vh] overflow-y-auto bg-background shadow-2xl border-t border-accent-dark opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 rounded-b-sm p-8 z-50">
+                                    <div className="grid grid-cols-3 gap-x-10 gap-y-8">
+                                        {collectionMenu.map((category) => (
+                                            <div key={category._id}>
+                                                <Link href={`/product?category=${category._id}`} className="text-[12px] uppercase tracking-[0.22em] font-bold text-secondary hover:text-primary transition-colors block mb-4">
+                                                    {category.name}
+                                                </Link>
+                                                <div className="space-y-4">
+                                                    {(category.children || []).map((subCategory) => (
+                                                        <div key={subCategory._id}>
+                                                            <Link href={`/product?category=${category._id}&subCategory=${subCategory._id}`} className="text-[11px] uppercase tracking-widest text-secondary/70 hover:text-primary transition-colors block">
+                                                                {subCategory.name}
+                                                            </Link>
+                                                            {(subCategory.children || []).length > 0 && (
+                                                                <ul className="mt-2 space-y-2 border-l border-border pl-3">
+                                                                    {subCategory.children.map((subSubCategory) => (
+                                                                        <li key={subSubCategory._id}>
+                                                                            <Link href={`/product?category=${category._id}&subCategory=${subCategory._id}&subSubCategory=${subSubCategory._id}`} className="text-[10px] uppercase tracking-widest text-secondary/40 hover:text-primary transition-colors block">
+                                                                                {subSubCategory.name}
+                                                                            </Link>
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </nav>
@@ -114,10 +161,10 @@ const Header = () => {
 
                             {/* Wishlist */}
                             <Link href="/wish-list" className=" hidden lg:block p-2 text-secondary hover:text-primary transition-colors relative group">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                                <svg className="w-5 h-5" fill={wishlistItems?.length ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                                 </svg>
-                                <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                <span className="absolute top-0 right-0 bg-secondary text-accent text-[9px] font-bold h-4 w-4 rounded-full flex items-center justify-center">{wishlistItems?.length || 0}</span>
                             </Link>
 
                             {/* Cart */}
@@ -126,7 +173,7 @@ const Header = () => {
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                                     </svg>
-                                    <span className="absolute -top-2 -right-2 bg-secondary text-accent text-[9px] font-bold h-4 w-4 rounded-full flex items-center justify-center">2</span>
+                                    <span className="absolute -top-2 -right-2 bg-secondary text-accent text-[9px] font-bold h-4 w-4 rounded-full flex items-center justify-center">{cartItems?.length}</span>
                                 </div>
                                 <span className="absolute group-hover:block bottom-[-10px] right-0  hidden text-[11px] font-bold uppercase tracking-widest mt-[2px]">Cart</span>
                             </Link>
@@ -137,22 +184,25 @@ const Header = () => {
                                 className="p-2 text-secondary hover:text-primary transition-colors focus:outline-none"
                                 aria-label="Toggle Theme"
                             >
-                                {theme === 'light' ? (
+                                {mounted && theme === 'light' ? (
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
                                     </svg>
-                                ) : (
+                                ) : mounted ? (
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m0 13.5V21m9.75-9h-2.25M5.25 12H3m16.357-7.357l-1.591 1.591M6.414 17.586l-1.591 1.591M17.586 17.586l1.591 1.591M6.414 6.414l1.591-1.591M12 7.5a4.5 4.5 0 110 9 4.5 4.5 0 010-9z" />
                                     </svg>
+                                ) : (
+                                    <div className="w-5 h-5" />
                                 )}
                             </button>
 
-                            {token ?
+                            {mounted && token ?
                                 (
                                     pathname === "/dashboard" ? (
                                         <button
-                                            onClick={() => {dispatch(removeToken());
+                                            onClick={() => {
+                                                dispatch(removeToken());
                                                 router.push("/");
                                             }}
                                             className="p-2 text-secondary hover:text-primary transition-colors focus:outline-none  flex gap-2 items-center"
@@ -232,10 +282,39 @@ const Header = () => {
                                 Wish List
                             </Link>
                             <div className="h-px bg-border my-6" />
-                            <Link href="#" className="text-sm uppercase tracking-widest text-secondary/40 hover:text-primary transition-colors">Living Room</Link>
-                            <Link href="#" className="text-sm uppercase tracking-widest text-secondary/40 hover:text-primary transition-colors">Bedroom</Link>
-                            <Link href="#" className="text-sm uppercase tracking-widest text-secondary/40 hover:text-primary transition-colors">Office</Link>
-                            <Link href="#" className="text-sm uppercase tracking-widest text-secondary/40 hover:text-primary transition-colors">Decor</Link>
+                            <p className="text-xs font-bold uppercase tracking-[0.25em] text-secondary">Collection</p>
+                            {collectionMenu.map((category) => (
+                                <div key={category._id} className="space-y-3">
+                                    <Link
+                                        href={`/product?category=${category._id}`}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="text-sm font-bold uppercase tracking-widest text-secondary hover:text-primary transition-colors block"
+                                    >
+                                        {category.name}
+                                    </Link>
+                                    {(category.children || []).map((subCategory) => (
+                                        <div key={subCategory._id} className="pl-4 space-y-2 border-l border-border">
+                                            <Link
+                                                href={`/product?category=${category._id}&subCategory=${subCategory._id}`}
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                className="text-xs uppercase tracking-widest text-secondary/60 hover:text-primary transition-colors block"
+                                            >
+                                                {subCategory.name}
+                                            </Link>
+                                            {(subCategory.children || []).map((subSubCategory) => (
+                                                <Link
+                                                    key={subSubCategory._id}
+                                                    href={`/product?category=${category._id}&subCategory=${subCategory._id}&subSubCategory=${subSubCategory._id}`}
+                                                    onClick={() => setIsMobileMenuOpen(false)}
+                                                    className="text-[11px] uppercase tracking-widest text-secondary/40 hover:text-primary transition-colors block pl-4"
+                                                >
+                                                    {subSubCategory.name}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
                         </nav>
 
                         <div className="mt-auto pt-10">

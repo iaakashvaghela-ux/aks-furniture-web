@@ -5,22 +5,69 @@ import ProductHero from './ProductHero';
 import ArtisanSpotlight from './ArtisanSpotlight';
 import ProductCard from '../../common/ProductCard';
 import { ProductBySlug } from '@/app/(withheader)/api-fetching/ApiFetch';
+import { getColor } from '@/app/(withheader)/api-fetching/colorsApi/colorsApi';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function ProductPageLayout({ data }) {
+export default function ProductPageLayout({ data, categoryData, path }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [colors, setColors] = useState([]);
+  const [colorFilter, setColorFilter] = useState([]);
   const [activeCategory, setActiveCategory] = useState("All");
+  const [fullPrice, setFullPrice] = useState(100000);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    getColor().then((res) => {
+      res.sort((a, b) => a.order - b.order);
+      setColors(res);
+    });
+  }, []);
 
   // Memoize products
   const products = useMemo(() => {
     if (!data) return [];
-    return Array.isArray(data) ? data : (data.products || []);
+    return Array.isArray(data) ? data : [];
   }, [data]);
 
-  const filteredProducts = useMemo(() => {
-    if (activeCategory === "All") return products;
-    return products.filter(p => p.category === activeCategory);
-  }, [products, activeCategory]);
+  const categoryId = searchParams.get("category");
+  const subCategoryId = searchParams.get("subCategory");
+  const subSubCategoryId = searchParams.get("subSubCategory");
+  const selectedCategory = categoryData.find((category) => category._id === categoryId);
+  const selectedCategoryName = selectedCategory?.name || activeCategory;
 
+  const handleCategoryChange = (categoryName) => {
+    setActiveCategory(categoryName);
+    setColorFilter([]);
+
+    if (categoryName === "All") {
+      router.replace("/product", { scroll: false });
+      return;
+    }
+
+    const category = categoryData.find((item) => item.name === categoryName);
+    router.replace(category ? `/product?category=${category._id}` : "/product", { scroll: false });
+  };
+
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      const productCategoryId = product.parentCategory?._id || product.parentCategory;
+      const productSubCategoryId = product.subCategory?._id || product.subCategory;
+      const productSubSubCategoryId = product.subSubCategory?._id || product.subSubCategory;
+      const matchesCategory = selectedCategoryName === "All" || product.parentCategory?.name === selectedCategoryName || productCategoryId === categoryId;
+      const matchesSubCategory = !subCategoryId || productSubCategoryId === subCategoryId;
+      const matchesSubSubCategory = !subSubCategoryId || productSubSubCategoryId === subSubCategoryId;
+      const matchesPrice = Number(product.salePrice) <= Number(fullPrice);
+      const productColorIds = (product.color || []).map((color) => color?._id || color);
+      const matchesColor = colorFilter.length === 0 || colorFilter.some((colorId) => productColorIds.includes(colorId));
+
+      return matchesCategory && matchesSubCategory && matchesSubSubCategory && matchesPrice && matchesColor;
+    });
+  }, [products, selectedCategoryName, categoryId, subCategoryId, subSubCategoryId, fullPrice, colorFilter]);
+
+
+
+  //&& p.salePrice < fullPrice
   return (
     <div className="bg-background min-h-screen overflow-x-hidden">
       {/* 1. Cinematic Hero */}
@@ -49,9 +96,15 @@ export default function ProductPageLayout({ data }) {
           {/* 2. Side Filter Bar (Desktop) */}
           <div className="hidden lg:block">
             <ProductSidebar
-              activeCategory={activeCategory}
-              setActiveCategory={setActiveCategory}
+              activeCategory={selectedCategoryName}
+              setActiveCategory={handleCategoryChange}
               productCount={filteredProducts.length}
+              categoryData={categoryData}
+              fullPrice={fullPrice}
+              setFullPrice={setFullPrice}
+              colors={colors}
+              colorFilter={colorFilter}
+              setColorFilter={setColorFilter}
             />
           </div>
 
@@ -63,7 +116,7 @@ export default function ProductPageLayout({ data }) {
               <div className="flex items-center gap-4 text-[11px] uppercase tracking-[0.3em] font-bold text-secondary/40">
                 <span>Collection</span>
                 <span className="w-1 h-1 bg-primary rounded-full"></span>
-                <span className="text-secondary">{activeCategory}</span>
+                <span className="text-secondary">{selectedCategoryName}</span>
               </div>
               <p className="text-[10px] uppercase tracking-[.3em] font-bold text-secondary/40">
                 Displaying <span className="text-secondary">{filteredProducts.length}</span> artisanal works
@@ -71,14 +124,17 @@ export default function ProductPageLayout({ data }) {
             </div>
 
             {/* 4. Editorial Product Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-x-10 gap-y-20 lg:gap-y-24">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-10 gap-y-20 lg:gap-y-24">
               {filteredProducts.map((product, index) => {
                 const isSpotlightBreak = index === 6;
 
-
                 return (
-                  <React.Fragment key={product.id}>
-                    
+                  <React.Fragment key={product._id}>
+                    {isSpotlightBreak && (
+                      <div className="col-span-full">
+                        <ArtisanSpotlight />
+                      </div>
+                    )}
 
                     <div
                       className="animate-fadeInUp group"
@@ -86,7 +142,7 @@ export default function ProductPageLayout({ data }) {
                         animationDelay: `${(index % 6) * 100}ms`,
                       }}
                     >
-                      <ProductCard product={product} />
+                      <ProductCard product={product} path={path} />
 
                       {/* Luxury Grid Detail: Minimalist divider on mobile */}
                       <div className="md:hidden w-full h-px bg-border mt-12 opacity-50"></div>
@@ -102,7 +158,11 @@ export default function ProductPageLayout({ data }) {
                 <div className="w-16 h-1 bg-primary/20 mx-auto mb-10"></div>
                 <h3 className="text-2xl font-serif text-secondary/40 italic">No pieces found in this collection.</h3>
                 <button
-                  onClick={() => setActiveCategory("All")}
+                  onClick={() => {
+                    handleCategoryChange("All");
+                    setColorFilter([]);
+                    setFullPrice(100000);
+                  }}
                   className="mt-8 text-[11px] uppercase tracking-[widest] font-bold text-primary border-b border-primary pb-1 hover:text-secondary hover:border-secondary transition-all"
                 >
                   Explore All Collections
@@ -143,9 +203,15 @@ export default function ProductPageLayout({ data }) {
             </button>
           </div>
           <ProductSidebar
-            activeCategory={activeCategory}
-            setActiveCategory={setActiveCategory}
+              activeCategory={selectedCategoryName}
+            setActiveCategory={handleCategoryChange}
             productCount={filteredProducts.length}
+            categoryData={categoryData}
+            fullPrice={fullPrice}
+            setFullPrice={setFullPrice}
+            colors={colors}
+            colorFilter={colorFilter}
+            setColorFilter={setColorFilter}
           />
         </div>
       </div>

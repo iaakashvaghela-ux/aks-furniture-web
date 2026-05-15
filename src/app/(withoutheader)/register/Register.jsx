@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useTheme } from '@/redux/hooks';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 export default function Register() {
   let baseUrl = process.env.NEXT_PUBLIC_BASEURL;
@@ -29,12 +30,13 @@ export default function Register() {
       alert("Passwords do not match");
       return;
     }
-    console.log("Registration attempt:", formData);
+    // console.log("Registration attempt:", formData);
 
     axios.post(`${baseUrl}auth/register`, formData)
       .then(response => {
-        console.log(response.data._status);
+        console.log(response.data);
         if (response.data._status) {
+          Cookies.set("token", response.data.token);
           router.push('/dashboard');
         }
       })

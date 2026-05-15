@@ -1,7 +1,7 @@
 import React from 'react';
 
-const ExcellenceStandard = () => {
-  const standards = [
+const ExcellenceStandard = ({ items = [], imagePath = "" }) => {
+  const fallbackStandards = [
     {
       id: '01',
       title: 'Premium Quality',
@@ -21,6 +21,14 @@ const ExcellenceStandard = () => {
       img: 'https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/why_choose_us/d86a55b7-bbd1-4565-86ad-b3463e728fdc-1760712425.jpg'
     }
   ];
+  const standards = items.length
+    ? items.map((item, index) => ({
+      id: String(index + 1).padStart(2, "0"),
+      title: item.title,
+      desc: item.description,
+      img: item.image ? `${imagePath}${item.image}` : ""
+    }))
+    : fallbackStandards;
 
   return (
     <section className="py-32 bg-neutral-900 overflow-hidden relative transition-colors duration-500">
@@ -31,7 +39,7 @@ const ExcellenceStandard = () => {
             <h3 className="text-5xl md:text-6xl font-serif font-bold italic leading-tight text-white">Defining Future <br /> Classics.</h3>
           </div>
           <p className="max-w-sm text-white/50 text-sm font-sans leading-relaxed">
-            We don't just build furniture; we curate environments that inspire the soul and elevate the everyday experience.
+            We don&apos;t just build furniture; we curate environments that inspire the soul and elevate the everyday experience.
           </p>
         </div>
 

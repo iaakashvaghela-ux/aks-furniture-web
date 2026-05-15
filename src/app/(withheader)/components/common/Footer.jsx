@@ -75,6 +75,8 @@ export default function Footer() {
                                 {socialLinks.map((social) => (
                                     <a
                                         key={social.name}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         href={social.url}
                                         className="w-11 h-11 flex items-center justify-center rounded-full bg-accent border border-border text-secondary/70 hover:bg-primary hover:text-white hover:border-primary transition-all duration-500 shadow-sm group"
                                         title={social.name}

@@ -5,16 +5,21 @@ import NewTrendingCollection from "./components/pages/home/NewTrendingCollection
 import ProductArea from "./components/pages/home/ProductArea";
 import Slider from "./components/pages/home/Slider";
 import TestimonialSection from "./components/pages/home/TestimonialSection";
+import { homeSliderApi } from "./api-fetching/home/homeSliderApi";
+import { homeProductApi } from "./api-fetching/home/homeProductApi";
 
-export default function Home() {
+export default async function Home() {
+  let res = await homeProductApi()
+  let sliderRes = await homeSliderApi()
+  // console.log(sliderRes);
   return (
     <main className="overflow-hidden">
-      <Slider />
+      <Slider sliderData={sliderRes?._data || []} path={sliderRes?.path || ""} />
       <DeliverySection />
-      <ProductArea />
-      <NewTrendingCollection/>
-      <BestsellingProducts/>
-      <TestimonialSection/>
+      <ProductArea products={res?._data || []} path={res?.path || ""} />
+      <NewTrendingCollection />
+      <BestsellingProducts productsData={res?._data || []} path={res?.path || ""} />
+      <TestimonialSection />
       <NewsLetter />
     </main>
   );

@@ -1,6 +1,11 @@
 import React from 'react';
 
-const SignatureTestimonial = () => {
+const SignatureTestimonial = ({ testimonials = [], imagePath = "" }) => {
+  const testimonial = testimonials[0];
+  const image = testimonial?.image
+    ? `${imagePath}${testimonial.image}`
+    : "https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/testimonial/3023f95a-ce85-434c-b9c5-2b0943b865e2-1670161621.jpg";
+
   return (
     <section className="py-40 bg-accent overflow-hidden relative">
       {/* Abstract Luxury Gradients */}
@@ -12,7 +17,7 @@ const SignatureTestimonial = () => {
       <div className="container mx-auto px-4 relative z-10 text-center">
         <div className="inline-block p-4 bg-background/50 backdrop-blur-sm rounded-full mb-12 shadow-sm border border-border">
           <img
-            src="https://wscubetech.co/Assignments/furniture/storage/app/public/uploads/images/testimonial/3023f95a-ce85-434c-b9c5-2b0943b865e2-1670161621.jpg"
+            src={image}
             alt="Client Profile"
             className="w-16 h-16 rounded-full object-cover grayscale"
           />
@@ -24,7 +29,7 @@ const SignatureTestimonial = () => {
           </svg>
 
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-secondary leading-[1.3] relative z-10 transition-colors">
-            "Monsta isn't just a furniture brand. It's an investment in <span className="text-primary italic">living well</span>. Their attention to material integrity and artisan soul is unparalleled in modern times."
+            {testimonial?.message || "Monsta is not just a furniture brand. It is an investment in living well. Their attention to material integrity and artisan soul is unparalleled in modern times."}
           </h2>
 
           <svg className="absolute -bottom-10 -right-10 w-20 h-20 text-primary/10" fill="currentColor" viewBox="0 0 24 24">
@@ -33,7 +38,7 @@ const SignatureTestimonial = () => {
         </div>
 
         <div className="mt-16 text-center">
-          <p className="text-2xl font-serif font-bold text-secondary transition-colors">Kathy Young</p>
+          <p className="text-2xl font-serif font-bold text-secondary transition-colors">{testimonial?.name || "Kathy Young"}</p>
           <p className="text-[11px] font-bold text-primary uppercase tracking-[.4em] mt-2 transition-colors">Patron • CEO of SunPark</p>
         </div>
       </div>

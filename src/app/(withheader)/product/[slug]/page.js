@@ -1,14 +1,14 @@
 import { ProductBySlug } from '@/app/(withheader)/api-fetching/ApiFetch';
 import ProductDetailsLayout from '@/app/(withheader)/components/pages/productdetailscomponent/ProductDetailsLayout'
 import React from 'react'
+import { productBySlug } from '../../api-fetching/product/productApi';
 
 export default async function ProductdetailsPage({ params }) {
-  const { pid } = await params;
-  console.log(pid);
+  const { slug } = await params;
 
-  const data = await ProductBySlug(pid);
+  const res = await productBySlug(slug);
 
   return (
-    <ProductDetailsLayout product={data} />
+    <ProductDetailsLayout product={res?._data} path={res?.path} />
   )
 }
