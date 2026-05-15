@@ -4,7 +4,6 @@ import ProductSidebar from './ProductSidebar';
 import ProductHero from './ProductHero';
 import ArtisanSpotlight from './ArtisanSpotlight';
 import ProductCard from '../../common/ProductCard';
-import { ProductBySlug } from '@/app/(withheader)/api-fetching/ApiFetch';
 import { getColor } from '@/app/(withheader)/api-fetching/colorsApi/colorsApi';
 import { useRouter, useSearchParams } from 'next/navigation';
 

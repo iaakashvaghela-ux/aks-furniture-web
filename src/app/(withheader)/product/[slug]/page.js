@@ -1,4 +1,3 @@
-import { ProductBySlug } from '@/app/(withheader)/api-fetching/ApiFetch';
 import ProductDetailsLayout from '@/app/(withheader)/components/pages/productdetailscomponent/ProductDetailsLayout'
 import React from 'react'
 import { productBySlug } from '../../api-fetching/product/productApi';
