@@ -7,6 +7,7 @@ import { useRazorpay, RazorpayOrderOptions } from "react-razorpay";
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { resolveImageUrl } from '../../../utils/imageUrl';
+import { apiBaseUrl } from '../../../api-fetching/apiBaseUrl';
 
 const CheckoutLayout = () => {
   const { error, isLoading, Razorpay } = useRazorpay();
@@ -106,7 +107,7 @@ const CheckoutLayout = () => {
 
 
     } else if (paymentMethod == '2') {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_BASEURL;
+      const apiUrl = apiBaseUrl();
       const token = Cookies.get("token");
 
       if (response._status) {
@@ -119,7 +120,7 @@ const CheckoutLayout = () => {
           order_id: response.orderRes.id, // Generate order_id on server
           handler: (response) => {
             console.log("Payment Success Handler Response:", response);
-            axios.post(`${apiBaseUrl}order/verify-payment`, response, {
+            axios.post(`${apiUrl}order/verify-payment`, response, {
               headers: {
                 Authorization: `Bearer ${token}`,
               },

@@ -4,12 +4,13 @@ import Link from 'next/link';
 import { useTheme } from '@/redux/hooks';
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
+import { apiBaseUrl } from '../../../(withheader)/api-fetching/apiBaseUrl';
 
 export default function ResetPassword() {
   const { userId } = useParams();
 
 
-  let baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+  let baseUrl = apiBaseUrl();
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const [formData, setFormData] = useState({

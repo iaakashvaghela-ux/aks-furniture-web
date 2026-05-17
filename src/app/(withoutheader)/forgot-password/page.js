@@ -3,9 +3,10 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from '@/redux/hooks';
 import axios from 'axios';
+import { apiBaseUrl } from '../../(withheader)/api-fetching/apiBaseUrl';
 
 export default function ForgotPassword() {
-  let baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+  let baseUrl = apiBaseUrl();
   const { theme, toggleTheme } = useTheme();
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);

@@ -6,9 +6,10 @@ import axios from 'axios';
 import { setToken } from '@/redux/slices/loginSlice';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
+import { apiBaseUrl } from '../../(withheader)/api-fetching/apiBaseUrl';
 
 export default function Login() {
-  let baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+  let baseUrl = apiBaseUrl();
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const dispatch = useDispatch();

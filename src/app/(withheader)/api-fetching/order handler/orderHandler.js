@@ -1,7 +1,8 @@
-const Cookies = require("js-cookie");
-const { default: axios } = require("axios");
+import Cookies from "js-cookie";
+import axios from "axios";
+import { apiBaseUrl } from "../apiBaseUrl";
 
-let baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+let baseUrl = apiBaseUrl();
 
 let saveOrder = async (data) => {
     try {
@@ -32,4 +33,4 @@ let getOrder = async () => {
         return { success: false, message: error.message, data: [] };
     }
 }
-module.exports = { saveOrder, getOrder }
+export { saveOrder, getOrder }

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { apiBaseUrl } from '../../../api-fetching/apiBaseUrl';
 
 const SecurityInput = ({ label, type, placeholder, name }) => (
   <div className="space-y-2">
@@ -19,7 +20,7 @@ const SecurityInput = ({ label, type, placeholder, name }) => (
 
 export default function DashboardSecurity() {
   const token = useSelector((state) => state.login.token);
-  let apiBaseUrl = process.env.NEXT_PUBLIC_BASEURL;
+  let apiUrl = apiBaseUrl();
 
   let changePassword = (e) => {
     e.preventDefault();
@@ -32,7 +33,7 @@ export default function DashboardSecurity() {
       return;
     }
 
-    axios.post(`${apiBaseUrl}auth/change-password`, {
+    axios.post(`${apiUrl}auth/change-password`, {
       currentPassword,
       newPassword
     }, {

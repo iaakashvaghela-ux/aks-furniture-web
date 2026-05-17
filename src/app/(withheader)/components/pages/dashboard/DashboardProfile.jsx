@@ -2,6 +2,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { apiBaseUrl } from '../../../api-fetching/apiBaseUrl';
 
 const ProfileInput = ({ label, type, placeholder, name, value, onChange, readOnly }) => (
   <div className="space-y-2">
@@ -23,7 +24,7 @@ const ProfileInput = ({ label, type, placeholder, name, value, onChange, readOnl
 
 export default function DashboardProfile() {
   const token = useSelector((state) => state.login.token);
-  let apiBaseUrl = process.env.NEXT_PUBLIC_BASEURL;
+  let apiUrl = apiBaseUrl();
   const [profile, setProfile] = useState({
     name: '',
     email: '',
@@ -32,7 +33,7 @@ export default function DashboardProfile() {
   });
 
   const getProfile = () => {
-    axios.post(`${apiBaseUrl}auth/get-user`, {}, {
+    axios.post(`${apiUrl}auth/get-user`, {}, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -56,7 +57,7 @@ export default function DashboardProfile() {
   const updateProfile = (e) => {
     e.preventDefault();
     let gender = e.target.gender.value;
-    axios.post(`${apiBaseUrl}auth/update-profile`, {gender}, {
+    axios.post(`${apiUrl}auth/update-profile`, {gender}, {
       headers: {
         Authorization: `Bearer ${token}`
       }

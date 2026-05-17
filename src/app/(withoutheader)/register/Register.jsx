@@ -5,9 +5,10 @@ import { useTheme } from '@/redux/hooks';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import { apiBaseUrl } from '../../(withheader)/api-fetching/apiBaseUrl';
 
 export default function Register() {
-  let baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+  let baseUrl = apiBaseUrl();
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const [formData, setFormData] = useState({

@@ -1,7 +1,8 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { apiBaseUrl } from "../apiBaseUrl";
 
-let baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+let baseUrl = apiBaseUrl();
 
 export const addToCart = async (productId, quantity, price, image, name, category, path) => {
     try {

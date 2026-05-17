@@ -1,7 +1,8 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { apiBaseUrl } from "../apiBaseUrl";
 
-const baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+const baseUrl = apiBaseUrl();
 
 const authHeaders = () => ({
     "Content-Type": "application/json",
