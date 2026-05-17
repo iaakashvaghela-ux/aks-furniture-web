@@ -1,8 +1,9 @@
 import axios from "axios";
+import { apiBaseUrl } from "../apiBaseUrl";
 
 
 export let homeSliderApi = async () => {
-  let baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+  let baseUrl = apiBaseUrl();
   try {
     let res = await axios.get(`${baseUrl}home/slider`);
     return res.data;

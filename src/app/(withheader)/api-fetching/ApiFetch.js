@@ -1,7 +1,8 @@
 import axios from 'axios'
+import { apiBaseUrl } from './apiBaseUrl';
 
 export const Products = async () => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+  const baseUrl = apiBaseUrl();
   try {
     const res = await axios.get(`${baseUrl}products/view`);
     return res.data?._data || [];
@@ -13,7 +14,7 @@ export const Products = async () => {
 
 
 export const ProductBySlug = async (slug) => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+  const baseUrl = apiBaseUrl();
   try {
     const res = await axios.get(`${baseUrl}products/${slug}`);
     return res.data?._data || {};

@@ -1,8 +1,9 @@
 import axios from "axios";
+import { apiBaseUrl } from "../apiBaseUrl";
 
 
 export let productApi = async (filters = {}) => {
-  let baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+  let baseUrl = apiBaseUrl();
   try {
     const params = new URLSearchParams();
 
@@ -33,7 +34,7 @@ export let productApi = async (filters = {}) => {
 
 
 export let productBySlug = async (slug) => {
-  let baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+  let baseUrl = apiBaseUrl();
   try {
     let res = await axios.get(`${baseUrl}products/${slug}`);
     return res.data;

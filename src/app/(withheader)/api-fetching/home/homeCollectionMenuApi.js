@@ -1,7 +1,8 @@
 import axios from "axios";
+import { apiBaseUrl } from "../apiBaseUrl";
 
 export const homeCollectionMenuApi = async () => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+  const baseUrl = apiBaseUrl();
 
   try {
     const res = await axios.get(`${baseUrl}home/collection-menu`);

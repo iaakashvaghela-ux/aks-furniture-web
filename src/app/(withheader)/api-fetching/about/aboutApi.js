@@ -1,6 +1,7 @@
 import axios from "axios";
+import { apiBaseUrl } from "../apiBaseUrl";
 
-const baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+const baseUrl = apiBaseUrl();
 
 export const getAboutPageData = async () => {
   try {

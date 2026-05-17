@@ -1,7 +1,8 @@
 import axios from "axios";
+import { apiBaseUrl } from "../apiBaseUrl";
 
 export let categoryApi = async () => {
-  let baseUrl = process.env.NEXT_PUBLIC_BASEURL;
+  let baseUrl = apiBaseUrl();
   try {
     let res = await axios.get(`${baseUrl}products/category/view`);
     return res.data;
