@@ -6,6 +6,7 @@ import { saveOrder } from '@/app/(withheader)/api-fetching/order handler/orderHa
 import { useRazorpay, RazorpayOrderOptions } from "react-razorpay";
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { resolveImageUrl } from '../../../utils/imageUrl';
 
 const CheckoutLayout = () => {
   const { error, isLoading, Razorpay } = useRazorpay();
@@ -362,7 +363,7 @@ const CheckoutLayout = () => {
                     {cartSummary.items.map((item, idx) => (
                       <div key={idx} className="flex gap-6 items-center">
                         <div className="w-20 h-20 bg-accent rounded-2xl overflow-hidden flex-shrink-0">
-                          <img src={item.path + item.image} alt={item.name} className="w-full h-full object-cover" />
+                          <img src={resolveImageUrl(item.path, item.image)} alt={item.name} className="w-full h-full object-cover" />
                         </div>
                         <div className="flex-1 space-y-1">
                           <h4 className="text-sm font-serif font-bold leading-tight">{item.name}</h4>

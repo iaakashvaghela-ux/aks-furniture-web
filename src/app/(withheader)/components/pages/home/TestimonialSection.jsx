@@ -4,6 +4,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { viewTestimonials } from '@/app/(withheader)/api-fetching/testimonials/testimonialsApi';
+import { resolveImageUrl } from '../../../utils/imageUrl';
 
 const TestimonialSection = () => {
     const [testimonials, setTestimonials] = useState([])
@@ -48,7 +49,7 @@ const TestimonialSection = () => {
                                     <div className="mb-10">
                                         <div className="w-20 h-20 md:w-28 md:h-28 rounded-full overflow-hidden border-4 border-background shadow-xl mx-auto ring-1 ring-border">
                                             <img
-                                                src={path+testimonial.image}
+                                                src={resolveImageUrl(path, testimonial.image)}
                                                 alt={testimonial.name}
                                                 className="w-full h-full object-cover"
                                             />

@@ -8,6 +8,7 @@ import { getCartItems } from '@/app/(withheader)/api-fetching/cartApi/cartApi';
 import { getWishlistItems, removeFromWishlist } from '@/app/(withheader)/api-fetching/wishlistApi/wishlistApi';
 import { setCart } from '@/redux/slices/cartSlice';
 import { setWishlist } from '@/redux/slices/wishlistSlice';
+import { resolveImageUrl } from '../../../utils/imageUrl';
 
 const WishlistLayout = () => {
   const [wishlistItems, setWishlistItems] = useState([]);
@@ -108,7 +109,7 @@ const WishlistLayout = () => {
                 <div className="relative aspect-[4/5] overflow-hidden">
                   <Link href={productHref} className="block w-full h-full">
                     <img
-                      src={`${item.path}${item.image}`}
+                      src={resolveImageUrl(item.path, item.image)}
                       alt={item.name}
                       className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                     />

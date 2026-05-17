@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { resolveImageUrl } from '../../../utils/imageUrl';
 
 const HomeSlider = ({ sliderData, path }) => {
     const [mounted, setMounted] = useState(false);
@@ -40,7 +41,7 @@ const HomeSlider = ({ sliderData, path }) => {
                         {/* Background with subtle zoom animation */}
                         <div
                             className="absolute inset-0 bg-center bg-cover bg-no-repeat transition-transform duration-[10000ms] ease-out scale-110 [.slick-active_&]:scale-100"
-                            style={{ backgroundImage: `url(${path}${slide.image})` }}
+                            style={{ backgroundImage: `url(${resolveImageUrl(path, slide.image)})` }}
                         >
                             {/* Sophisticated Dynamic Overlay */}
                             <div className="absolute inset-0 bg-black/40 dark:bg-black/70 backdrop-brightness-[0.8] transition-colors duration-700"></div>

@@ -5,6 +5,7 @@ import { addToCart } from '../../api-fetching/cartApi/addToCart';
 import { addToWishlist, getWishlistItems } from '../../api-fetching/wishlistApi/wishlistApi';
 import { useDispatch } from 'react-redux';
 import { setWishlist } from '@/redux/slices/wishlistSlice';
+import { resolveImageUrl } from '../../utils/imageUrl';
 
 const ProductCard = ({ product, path }) => {
     const router = useRouter();
@@ -33,7 +34,7 @@ const ProductCard = ({ product, path }) => {
             <div className="relative aspect-[3/4] overflow-hidden bg-accent">
                 <Link href={`/product/${product.slug}`} className="block w-full h-full">
                     <img
-                        src={`${path}${product.productImage}`}
+                        src={resolveImageUrl(path, product.productImage)}
                         alt={product.productName}
                         className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000 ease-in-out"
                     />

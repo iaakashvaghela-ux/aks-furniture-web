@@ -6,6 +6,7 @@ import { addToCart } from '@/app/(withheader)/api-fetching/cartApi/addToCart';
 import { addToWishlist, getWishlistItems } from '@/app/(withheader)/api-fetching/wishlistApi/wishlistApi';
 import { useDispatch } from 'react-redux';
 import { setWishlist } from '@/redux/slices/wishlistSlice';
+import { resolveImageUrl } from '../../../utils/imageUrl';
 
 const ProductDetailsLayout = ({ product, path }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -25,7 +26,7 @@ const ProductDetailsLayout = ({ product, path }) => {
   const categoryId = product.parentCategory?._id || product.parentCategory;
   const productImage = product.productImage || product.galleryImage?.[0];
   const selectedProductImage = selectedImage === null ? productImage : product.galleryImage?.[selectedImage];
-  const displayImage = selectedProductImage ? `${path}${selectedProductImage}` : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHICWZcFeQ7UuaU7N30-E4Vt1GaTYIU1DIEA&s';
+  const displayImage = resolveImageUrl(path, selectedProductImage, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHICWZcFeQ7UuaU7N30-E4Vt1GaTYIU1DIEA&s');
 
   const handleAddToWishlist = async () => {
     const response = await addToWishlist(product._id, product.salePrice, productImage, product.productName, categoryId, path);
@@ -77,7 +78,7 @@ const ProductDetailsLayout = ({ product, path }) => {
                   className={`relative aspect-square rounded-xl sm:rounded-2xl overflow-hidden border-2 transition-all duration-300 ${selectedImage === idx ? 'border-primary opacity-100' : 'border-transparent opacity-60 hover:opacity-100'
                     }`}
                 >
-                  <img src={`${path}${img}`} alt="Detail" className="w-full h-full object-cover" />
+                  <img src={resolveImageUrl(path, img)} alt="Detail" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
@@ -211,8 +212,8 @@ const ProductDetailsLayout = ({ product, path }) => {
                 </p>
                 {product.galleryImage && product.galleryImage.length >= 2 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-12 pt-4 sm:pt-8">
-                    <img src={`${path}${product.galleryImage[0]}`} className="rounded-xl sm:rounded-2xl w-full shadow-md" alt="Process" />
-                    <img src={`${path}${product.galleryImage[1]}`} className="rounded-xl sm:rounded-2xl w-full shadow-md" alt="Material" />
+                    <img src={resolveImageUrl(path, product.galleryImage[0])} className="rounded-xl sm:rounded-2xl w-full shadow-md" alt="Process" />
+                    <img src={resolveImageUrl(path, product.galleryImage[1])} className="rounded-xl sm:rounded-2xl w-full shadow-md" alt="Material" />
                   </div>
                 )}
               </div>
